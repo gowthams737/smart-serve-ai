@@ -5,7 +5,7 @@ const NOTIFICATIONS_KEY = 'smartserve_provider_notifications';
 const EARNINGS_KEY = 'smartserve_provider_earnings';
 const REVIEWS_KEY = 'smartserve_provider_reviews';
 
-const API_URL = 'http://localhost:5000/api/provider';
+const API_URL = '/api/provider';
 
 export const ProviderService = {
   initialize: () => {
@@ -137,7 +137,7 @@ export const ProviderService = {
   },
 
   registerProvider: async (formData) => {
-    const response = await fetch('http://localhost:5000/api/auth/register', {
+    const response = await fetch('/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ role: 'Provider', ...formData })

@@ -75,7 +75,7 @@ const CustomerLayout = () => {
 
     let eventSource = null;
     try {
-      const streamUrl = `http://localhost:5000/api/customer/notifications/stream/${encodeURIComponent(customer.email.toLowerCase().trim())}`;
+      const streamUrl = `/api/customer/notifications/stream/${encodeURIComponent(customer.email.toLowerCase().trim())}`;
       eventSource = new EventSource(streamUrl);
 
       eventSource.onmessage = (event) => {

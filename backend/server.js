@@ -3,7 +3,16 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
+import dns from 'dns';
 import { fileURLToPath } from 'url';
+
+// Ensure DNS resolution succeeds when local loopback DNS is configured
+try {
+  const currentServers = dns.getServers();
+  if (currentServers.includes('127.0.0.1') || currentServers.length === 0) {
+    dns.setServers(['8.8.8.8', '1.1.1.1']);
+  }
+} catch (e) {}
 
 // Import Routes
 import authRoutes from './routes/authRoutes.js';
@@ -46,6 +55,23 @@ app.use('/api/customer', customerRoutes);
 app.use('/api/provider', providerRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/ai', aiRoutes);
+
+// Catch-all 404 handler for unmatched API routes (prevents SPA fallback from masking API errors)
+app.all('/api/*', (req, res) => {
+  res.status(404).json({
+    success: false,
+    message: `API endpoint not found: ${req.method} ${req.originalUrl}`
+  });
+});
+
+// Serve frontend static build assets
+const distPath = path.join(__dirname, '..', 'dist');
+app.use(express.static(distPath));
+
+// SPA fallback for client-side routing (serves index.html for non-API/non-upload GET requests)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(distPath, 'index.html'));
+});
 
 // Error Handling Middleware
 app.use((err, req, res, next) => {

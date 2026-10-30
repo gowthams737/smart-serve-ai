@@ -1,5 +1,5 @@
 const USER_KEY = 'smartserve_user';
-const API_URL = 'http://localhost:5000/api/auth';
+const API_URL = '/api/auth';
 
 export const AuthService = {
     login: async (email, password, role) => {
@@ -157,11 +157,11 @@ export const AuthService = {
             const role = currentUser.role || 'Customer';
             let endpoint = '';
             if (role === 'Customer') {
-                endpoint = `http://localhost:5000/api/customer/profile/${encodeURIComponent(currentUser.email)}`;
+                endpoint = `/api/customer/profile/${encodeURIComponent(currentUser.email)}`;
             } else if (role === 'Provider') {
-                endpoint = `http://localhost:5000/api/provider/profile/${encodeURIComponent(currentUser.email)}`;
+                endpoint = `/api/provider/profile/${encodeURIComponent(currentUser.email)}`;
             } else {
-                endpoint = `http://localhost:5000/api/auth/verify-session?email=${encodeURIComponent(currentUser.email)}`;
+                endpoint = `/api/auth/verify-session?email=${encodeURIComponent(currentUser.email)}`;
             }
             const res = await fetch(endpoint, {
                 headers: { 'x-authenticated-email': currentUser.email }

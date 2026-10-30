@@ -207,7 +207,7 @@ export const CustomerService = {
     const user = JSON.parse(localStorage.getItem('smartserve_user')) || {};
     if (!user.email) return CustomerService.getCustomerInfo();
     try {
-      const res = await fetch(`http://localhost:5000/api/customer/profile/${encodeURIComponent(user.email)}`, {
+      const res = await fetch(`/api/customer/profile/${encodeURIComponent(user.email)}`, {
         headers: { 'x-authenticated-email': user.email }
       });
       const data = await res.json();
@@ -231,7 +231,7 @@ export const CustomerService = {
 
   updateCustomerInfo: async (info) => {
     const currentUser = JSON.parse(localStorage.getItem('smartserve_user')) || {};
-    const res = await fetch('http://localhost:5000/api/auth/update-profile', {
+    const res = await fetch('/api/auth/update-profile', {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
@@ -263,7 +263,7 @@ export const CustomerService = {
     const email = user.email;
     if (!email) return [];
     try {
-      const res = await fetch(`http://localhost:5000/api/customer/bookings/${encodeURIComponent(email)}`);
+      const res = await fetch(`/api/customer/bookings/${encodeURIComponent(email)}`);
       const data = await res.json();
       return data.success ? data.bookings.map(b => ({ ...b, id: b.bookingId || b._id })) : [];
     } catch (e) {
@@ -294,7 +294,7 @@ export const CustomerService = {
       city: 'Coimbatore'
     };
 
-    const res = await fetch('http://localhost:5000/api/customer/bookings', {
+    const res = await fetch('/api/customer/bookings', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -311,7 +311,7 @@ export const CustomerService = {
 
   cancelBooking: async (id) => {
     try {
-      const res = await fetch('http://localhost:5000/api/provider/bookings/status', {
+      const res = await fetch('/api/provider/bookings/status', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id, status: 'Cancelled' })
@@ -330,7 +330,7 @@ export const CustomerService = {
     const email = user.email;
     if (!email) return [];
     try {
-      const res = await fetch(`http://localhost:5000/api/customer/saved/${encodeURIComponent(email)}`);
+      const res = await fetch(`/api/customer/saved/${encodeURIComponent(email)}`);
       const data = await res.json();
       if (data.success && Array.isArray(data.savedProviders)) {
         localStorage.setItem(CUSTOMER_SAVED_KEY, JSON.stringify(data.savedProviders));
@@ -351,7 +351,7 @@ export const CustomerService = {
     const email = user.email;
     if (!email) return [];
     try {
-      const res = await fetch('http://localhost:5000/api/customer/saved/toggle', {
+      const res = await fetch('/api/customer/saved/toggle', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, providerId })
@@ -381,7 +381,7 @@ export const CustomerService = {
     const email = user.email;
     if (!email) return [];
     try {
-      const res = await fetch(`http://localhost:5000/api/customer/notifications/${encodeURIComponent(email)}`);
+      const res = await fetch(`/api/customer/notifications/${encodeURIComponent(email)}`);
       const data = await res.json();
       return data.success ? data.notifications : [];
     } catch (e) {
@@ -395,7 +395,7 @@ export const CustomerService = {
     const email = user.email;
     if (!email) return [];
     try {
-      const res = await fetch('http://localhost:5000/api/customer/notifications/read', {
+      const res = await fetch('/api/customer/notifications/read', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email })
@@ -410,7 +410,7 @@ export const CustomerService = {
 
   markNotificationAsRead: async (id) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/customer/notifications/read/${id}`, {
+      const res = await fetch(`/api/customer/notifications/read/${id}`, {
         method: 'POST'
       });
       const data = await res.json();
@@ -426,7 +426,7 @@ export const CustomerService = {
     try {
       // Pre-fetch reviews to cache
       try {
-        const revRes = await fetch('http://localhost:5000/api/customer/reviews/all');
+        const revRes = await fetch('/api/customer/reviews/all');
         const revData = await revRes.json();
         if (revData.success) {
           cachedReviews = revData.reviews;
@@ -448,7 +448,7 @@ export const CustomerService = {
       if (filters.sortBy) params.set('sortBy', filters.sortBy);
 
       const qs = params.toString() ? `?${params.toString()}` : '';
-      const res = await fetch(`http://localhost:5000/api/customer/providers${qs}`);
+      const res = await fetch(`/api/customer/providers${qs}`);
       const data = await res.json();
       if (!res.ok || !data.success) {
         throw new Error(data.message || 'Failed to fetch providers');
@@ -472,7 +472,7 @@ export const CustomerService = {
 
   getProviderById: async (id) => {
     try {
-      const res = await fetch('http://localhost:5000/api/customer/providers');
+      const res = await fetch('/api/customer/providers');
       const data = await res.json();
       if (data.success) {
         return data.providers.find(p => p.id === id) || null;
@@ -490,7 +490,7 @@ export const CustomerService = {
 
   fetchProviderReviews: async (providerId) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/customer/reviews/${providerId}`);
+      const res = await fetch(`/api/customer/reviews/${providerId}`);
       const data = await res.json();
       return data.success ? data.reviews : [];
     } catch (e) {
@@ -510,7 +510,7 @@ export const CustomerService = {
       comment: (comment || '').trim(),
       serviceTaken: serviceTaken || 'Service'
     };
-    const res = await fetch('http://localhost:5000/api/customer/reviews', {
+    const res = await fetch('/api/customer/reviews', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
@@ -530,7 +530,7 @@ export const CustomerService = {
     const userEmail = email || user.email;
     if (!userEmail) return [];
     try {
-      const res = await fetch(`http://localhost:5000/api/customer/reviews/customer/${encodeURIComponent(userEmail)}`);
+      const res = await fetch(`/api/customer/reviews/customer/${encodeURIComponent(userEmail)}`);
       const data = await res.json();
       return data.success ? data.reviews : [];
     } catch (e) {
@@ -542,7 +542,7 @@ export const CustomerService = {
   // ── Services / Categories ──
   getServiceCategories: async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/customer/services');
+      const res = await fetch('/api/customer/services');
       const data = await res.json();
       if (!res.ok || !data.success) {
         throw new Error(data.message || 'Failed to fetch service categories');
@@ -566,7 +566,7 @@ export const CustomerService = {
       if (filters.sortBy) params.set('sortBy', filters.sortBy);
 
       const qs = params.toString() ? `?${params.toString()}` : '';
-      const res = await fetch(`http://localhost:5000/api/customer/services-catalog${qs}`);
+      const res = await fetch(`/api/customer/services-catalog${qs}`);
       const data = await res.json();
       if (!res.ok || !data.success) {
         throw new Error(data.message || 'Failed to fetch services catalog');
@@ -580,7 +580,7 @@ export const CustomerService = {
 
   getTopProviders: async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/customer/top-providers');
+      const res = await fetch('/api/customer/top-providers');
       const data = await res.json();
       const raw = data.success ? data.providers : [];
       const seen = new Set();
@@ -604,7 +604,7 @@ export const CustomerService = {
   // ── AI Smart Functions ──
   getAIRecommendations: async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/customer/recommendations');
+      const res = await fetch('/api/customer/recommendations');
       const data = await res.json();
       const raw = data.success && Array.isArray(data.recommendations) ? data.recommendations : [];
       const seen = new Set();
@@ -635,7 +635,7 @@ export const CustomerService = {
     quantity = 1
   ) => {
     try {
-      const res = await fetch('http://localhost:5000/api/customer/estimate', {
+      const res = await fetch('/api/customer/estimate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -744,7 +744,7 @@ export const CustomerService = {
   getAIServicePlan: async (options) => {
     const payload = Array.isArray(options) ? { services: options } : (typeof options === 'string' ? { message: options } : (options || {}));
     try {
-      const res = await fetch('http://localhost:5000/api/ai/planner', {
+      const res = await fetch('/api/ai/planner', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -925,7 +925,7 @@ export const CustomerService = {
   },
 
   sendAIMessage: async (message, history = [], customer = null, image = null, docAttachment = null) => {
-    const response = await fetch('http://localhost:5000/api/ai/chat', {
+    const response = await fetch('/api/ai/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ message, history, customer, image, document: docAttachment })
@@ -945,7 +945,7 @@ export const CustomerService = {
   getAIChatHistory: async (customerEmail) => {
     if (!customerEmail) return [];
     try {
-      const res = await fetch(`http://localhost:5000/api/ai/history/${encodeURIComponent(customerEmail)}`);
+      const res = await fetch(`/api/ai/history/${encodeURIComponent(customerEmail)}`);
       const data = await res.json();
       return data.success && Array.isArray(data.messages) ? data.messages : [];
     } catch (err) {
@@ -957,7 +957,7 @@ export const CustomerService = {
   clearAIChatHistory: async (customerEmail) => {
     if (!customerEmail) return true;
     try {
-      const res = await fetch(`http://localhost:5000/api/ai/history/${encodeURIComponent(customerEmail)}`, {
+      const res = await fetch(`/api/ai/history/${encodeURIComponent(customerEmail)}`, {
         method: 'DELETE'
       });
       const data = await res.json();

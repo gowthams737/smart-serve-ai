@@ -87,7 +87,7 @@ const ProviderRegister = () => {
     // Load existing service categories from backend
     const loadCategories = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/customer/services');
+        const res = await fetch('/api/customer/services');
         const data = await res.json();
         if (data.success && Array.isArray(data.services) && data.services.length > 0) {
           const names = data.services.map(s => s.name);

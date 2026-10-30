@@ -79,7 +79,7 @@ const ProviderSettings = () => {
       }
 
       try {
-        const catRes = await fetch('http://localhost:5000/api/customer/services');
+        const catRes = await fetch('/api/customer/services');
         const catData = await catRes.json();
         if (catData.success && Array.isArray(catData.services) && catData.services.length > 0) {
           setCategories(catData.services.map(s => s.name));
@@ -144,7 +144,7 @@ const ProviderSettings = () => {
     }
 
     try {
-      const res = await fetch('http://localhost:5000/api/auth/change-password', {
+      const res = await fetch('/api/auth/change-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

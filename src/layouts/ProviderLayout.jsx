@@ -80,7 +80,7 @@ const ProviderLayout = () => {
 
     let eventSource = null;
     try {
-      const streamUrl = `http://localhost:5000/api/provider/notifications/stream/${encodeURIComponent(provider.email.toLowerCase().trim())}`;
+      const streamUrl = `/api/provider/notifications/stream/${encodeURIComponent(provider.email.toLowerCase().trim())}`;
       eventSource = new EventSource(streamUrl);
 
       eventSource.onmessage = (event) => {

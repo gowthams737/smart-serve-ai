@@ -116,7 +116,7 @@ export const saveImageIfBase64 = (imageString) => {
     const filePath = path.join(uploadsDir, uniqueName);
 
     fs.writeFileSync(filePath, buffer);
-    const publicUrl = `http://localhost:5000/uploads/${uniqueName}`;
+    const publicUrl = `/uploads/${uniqueName}`;
     return publicUrl;
   } catch (err) {
     console.error('Error saving base64 image to disk:', err);

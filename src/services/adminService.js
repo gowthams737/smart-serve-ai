@@ -358,7 +358,7 @@ const initStorage = (key, defaultData) => {
   }
 };
 
-const API_URL = 'http://localhost:5000/api/admin';
+const API_URL = '/api/admin';
 
 export const AdminService = {
   initialize: () => {
@@ -381,7 +381,7 @@ export const AdminService = {
 
   updateProfile: async (profile) => {
     const currentUser = JSON.parse(localStorage.getItem('smartserve_user')) || {};
-    const response = await fetch('http://localhost:5000/api/auth/update-profile', {
+    const response = await fetch('/api/auth/update-profile', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id: currentUser.id, ...profile })
