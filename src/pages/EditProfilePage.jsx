@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Camera, User, Phone, MapPin, ArrowLeft, Save, Check, AlertCircle, Lock } from 'lucide-react';
 import { AuthService } from '../services/authService';
+import { cleanImageUrl } from '../utils/imageUrl';
 import Input from '../components/Input';
 import Button from '../components/Button';
 
@@ -17,7 +18,7 @@ const EditProfilePage = () => {
     pincode: user?.pincode || '641002'
   });
   // Preview image (base64 or existing URL) for display before saving
-  const [previewImage, setPreviewImage] = useState(user?.profileImage || '');
+  const [previewImage, setPreviewImage] = useState(cleanImageUrl(user?.profileImage || ''));
   // The final base64 string to save (null means no change, '' means removed)
   const [newProfileImage, setNewProfileImage] = useState(null);
   const [loading, setLoading] = useState(false);

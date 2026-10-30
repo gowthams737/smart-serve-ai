@@ -11,6 +11,7 @@ import Setting from '../models/Setting.js';
 import Service from '../models/Service.js';
 import Earning from '../models/Earning.js';
 import { formatDateDDMMYYYY } from '../utils/dateFormat.js';
+import { normalizeImageUrl } from '../utils/imageHandler.js';
 
 const router = express.Router();
 
@@ -155,7 +156,7 @@ router.get('/providers', async (req, res, next) => {
       about: p.about || p.bio || '',
       bio: p.bio || p.about || '',
       workingHours: p.workingHours,
-      photo: p.photo || p.user?.profileImage,
+      photo: normalizeImageUrl(p.photo || p.user?.profileImage || ''),
       completedJobs: p.completedJobs,
       earnings: p.earnings
     }));

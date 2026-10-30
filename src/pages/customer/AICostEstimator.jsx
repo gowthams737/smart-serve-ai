@@ -17,6 +17,7 @@ import {
   UserCheck
 } from 'lucide-react';
 import { CustomerService } from '../../services/customerService';
+import { cleanImageUrl } from '../../utils/imageUrl';
 
 const AICostEstimator = () => {
   const { darkMode } = useOutletContext();
@@ -449,8 +450,8 @@ const AICostEstimator = () => {
                     >
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl overflow-hidden bg-slate-800 flex items-center justify-center font-bold text-white text-xs flex-shrink-0">
-                          {p.photo ? (
-                            <img src={p.photo} alt={p.name} className="w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none'; }} />
+                          {cleanImageUrl(p.photo) ? (
+                            <img src={cleanImageUrl(p.photo)} alt={p.name} className="w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none'; }} />
                           ) : (
                             <span>{p.name?.charAt(0) || 'P'}</span>
                           )}

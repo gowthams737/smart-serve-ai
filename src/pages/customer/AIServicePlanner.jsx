@@ -28,6 +28,7 @@ import {
   DollarSign
 } from 'lucide-react';
 import { CustomerService } from '../../services/customerService';
+import { cleanImageUrl } from '../../utils/imageUrl';
 import { AuthService } from '../../services/authService';
 
 const QUICK_PROMPTS = [
@@ -771,9 +772,9 @@ const AIServicePlanner = () => {
                             darkMode ? 'bg-slate-950/60 border-white/5' : 'bg-slate-50 border-slate-200'
                           }`}>
                             <div className="flex items-center gap-3">
-                              {step.provider.photo ? (
+                              {cleanImageUrl(step.provider.photo) ? (
                                 <img
-                                  src={step.provider.photo}
+                                  src={cleanImageUrl(step.provider.photo)}
                                   alt={step.provider.name}
                                   className="w-10 h-10 rounded-full object-cover border border-white/10"
                                 />
@@ -858,9 +859,9 @@ const AIServicePlanner = () => {
                       >
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                           <div className="flex items-center gap-3">
-                            {prov.photo ? (
+                            {cleanImageUrl(prov.photo) ? (
                               <img
-                                src={prov.photo}
+                                src={cleanImageUrl(prov.photo)}
                                 alt={prov.name}
                                 className="w-12 h-12 rounded-full object-cover border border-white/10"
                               />

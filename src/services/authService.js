@@ -1,3 +1,5 @@
+import { cleanImageUrl } from '../utils/imageUrl';
+
 const USER_KEY = 'smartserve_user';
 const API_URL = '/api/auth';
 
@@ -11,6 +13,11 @@ export const AuthService = {
         const data = await response.json();
         if (!data.success) {
             throw new Error(data.message || 'Login failed');
+        }
+        if (data.user) {
+            if (data.user.profileImage) data.user.profileImage = cleanImageUrl(data.user.profileImage);
+            if (data.user.photo) data.user.photo = cleanImageUrl(data.user.photo);
+            if (data.user.profilePhoto) data.user.profilePhoto = cleanImageUrl(data.user.profilePhoto);
         }
         localStorage.setItem(USER_KEY, JSON.stringify(data.user));
         return data.user;
@@ -26,6 +33,11 @@ export const AuthService = {
         if (!data.success) {
             throw new Error(data.message || 'Registration failed');
         }
+        if (data.user) {
+            if (data.user.profileImage) data.user.profileImage = cleanImageUrl(data.user.profileImage);
+            if (data.user.photo) data.user.photo = cleanImageUrl(data.user.photo);
+            if (data.user.profilePhoto) data.user.profilePhoto = cleanImageUrl(data.user.profilePhoto);
+        }
         localStorage.setItem(USER_KEY, JSON.stringify(data.user));
         return data.user;
     },
@@ -37,7 +49,12 @@ export const AuthService = {
     getCurrentUser: () => {
         try {
             const user = localStorage.getItem(USER_KEY);
-            return user ? JSON.parse(user) : null;
+            if (!user) return null;
+            const parsed = JSON.parse(user);
+            if (parsed.profileImage) parsed.profileImage = cleanImageUrl(parsed.profileImage);
+            if (parsed.photo) parsed.photo = cleanImageUrl(parsed.photo);
+            if (parsed.profilePhoto) parsed.profilePhoto = cleanImageUrl(parsed.profilePhoto);
+            return parsed;
         } catch (e) {
             console.error('Failed to parse current user from localStorage:', e);
             return null;
@@ -66,12 +83,13 @@ export const AuthService = {
             throw new Error(data.message || 'Profile update failed');
         }
         // Merge returned user data with existing localStorage data to preserve all fields
+        const cleanImg = cleanImageUrl(data.user.profileImage || currentUser.profileImage);
         const merged = {
             ...currentUser,
             ...data.user,
-            profileImage: data.user.profileImage || currentUser.profileImage,
-            photo: data.user.profileImage || currentUser.profileImage,
-            profilePhoto: data.user.profileImage || currentUser.profileImage
+            profileImage: cleanImg,
+            photo: cleanImg,
+            profilePhoto: cleanImg
         };
         localStorage.setItem(USER_KEY, JSON.stringify(merged));
         window.dispatchEvent(new Event('profile-updated'));
@@ -101,7 +119,7 @@ export const AuthService = {
         if (!data.success) {
             throw new Error(data.message || 'Profile image update failed');
         }
-        const updatedImage = data.user.profileImage || profileImage;
+        const updatedImage = cleanImageUrl(data.user.profileImage || profileImage);
         const merged = {
             ...currentUser,
             profileImage: updatedImage,

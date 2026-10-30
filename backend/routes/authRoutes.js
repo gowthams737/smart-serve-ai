@@ -7,7 +7,7 @@ import Provider from '../models/Provider.js';
 import Booking from '../models/Booking.js';
 import Service from '../models/Service.js';
 import { formatWorkingHours } from '../utils/timeFormat.js';
-import { saveImageIfBase64, sanitizeImageUrl } from '../utils/imageHandler.js';
+import { saveImageIfBase64, sanitizeImageUrl, normalizeImageUrl } from '../utils/imageHandler.js';
 
 const router = express.Router();
 const BCRYPT_ROUNDS = 10;
@@ -184,8 +184,8 @@ router.post('/login', async (req, res, next) => {
           address: customer.address || '',
           state: customer.state || 'Tamil Nadu',
           pincode: customer.pincode || '641002',
-          photo: customer.photo || user.profileImage || '',
-          profilePhoto: customer.photo || user.profileImage || '',
+          photo: normalizeImageUrl(customer.photo || user.profileImage || ''),
+          profilePhoto: normalizeImageUrl(customer.photo || user.profileImage || ''),
           savedAddresses: customer.savedAddresses || [],
           savedProviders: customer.savedProviders || []
         };
@@ -213,8 +213,8 @@ router.post('/login', async (req, res, next) => {
           state: provider.state,
           pincode: provider.pincode,
           address: provider.address,
-          photo: provider.photo || user.profileImage,
-          profilePhoto: provider.photo || user.profileImage,
+          photo: normalizeImageUrl(provider.photo || user.profileImage || ''),
+          profilePhoto: normalizeImageUrl(provider.photo || user.profileImage || ''),
           status: provider.status
         };
       }
@@ -228,7 +228,7 @@ router.post('/login', async (req, res, next) => {
         email: user.email,
         phone: user.phone,
         role: user.role,
-        profileImage: user.profileImage || '',
+        profileImage: normalizeImageUrl(user.profileImage || ''),
         ...roleDetails
       }
     });
@@ -435,8 +435,8 @@ router.post('/register', async (req, res, next) => {
           state: provider.state,
           pincode: provider.pincode,
           address: provider.address,
-          photo: provider.photo,
-          profilePhoto: provider.photo,
+          photo: normalizeImageUrl(provider.photo),
+          profilePhoto: normalizeImageUrl(provider.photo),
           status: provider.status
         };
       } else {
@@ -459,8 +459,8 @@ router.post('/register', async (req, res, next) => {
           address: customer.address,
           state: customer.state,
           pincode: customer.pincode,
-          photo: customer.photo || '',
-          profilePhoto: customer.photo || '',
+          photo: normalizeImageUrl(customer.photo || ''),
+          profilePhoto: normalizeImageUrl(customer.photo || ''),
           savedAddresses: customer.savedAddresses,
           savedProviders: customer.savedProviders
         };
@@ -570,7 +570,7 @@ router.post('/update-profile', async (req, res, next) => {
         address: customer.address,
         state: customer.state,
         pincode: customer.pincode,
-        photo: customer.photo || user.profileImage || '',
+        photo: normalizeImageUrl(customer.photo || user.profileImage || ''),
         savedAddresses: customer.savedAddresses || [],
         savedProviders: customer.savedProviders || [],
         stats: {
@@ -616,9 +616,9 @@ router.post('/update-profile', async (req, res, next) => {
         email: user.email,
         phone: user.phone,
         role: user.role,
-        profileImage: user.profileImage || '',
-        photo: user.profileImage || '',
-        profilePhoto: user.profileImage || '',
+        profileImage: normalizeImageUrl(user.profileImage || ''),
+        photo: normalizeImageUrl(user.profileImage || ''),
+        profilePhoto: normalizeImageUrl(user.profileImage || ''),
         ...(customerData || {})
       }
     });

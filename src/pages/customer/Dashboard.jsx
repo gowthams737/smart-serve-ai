@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { CustomerService } from '../../services/customerService';
 import { formatDateDDMMYYYY } from '../../utils/dateFormat';
+import { cleanImageUrl } from '../../utils/imageUrl';
 
 const CustomerDashboard = () => {
   const { darkMode } = useOutletContext();
@@ -360,7 +361,7 @@ const CustomerDashboard = () => {
                   }`}
                 >
                   <div className="flex items-center gap-4">
-                    <img src={b.providerPhoto} alt={b.providerName} className="w-12 h-12 rounded-full object-cover border-2 border-blue-500/20" />
+                    <img src={cleanImageUrl(b.providerPhoto)} alt={b.providerName} className="w-12 h-12 rounded-full object-cover border-2 border-blue-500/20" />
                     <div>
                       <h4 className={`font-bold text-sm ${darkMode ? 'text-white' : 'text-slate-900'}`}>{b.service}</h4>
                       <p className={`text-xs ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{b.providerName} • {b.category}</p>
@@ -533,8 +534,8 @@ const CustomerDashboard = () => {
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-9 h-9 rounded-full overflow-hidden bg-slate-800 flex items-center justify-center font-bold text-white text-xs flex-shrink-0">
-                      {p.photo ? (
-                        <img src={p.photo} alt={p.name} className="w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none'; }} />
+                      {cleanImageUrl(p.photo) ? (
+                        <img src={cleanImageUrl(p.photo)} alt={p.name} className="w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none'; }} />
                       ) : (
                         <span>{p.name?.charAt(0) || 'P'}</span>
                       )}

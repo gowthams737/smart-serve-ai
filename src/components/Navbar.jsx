@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { LogOut, User, Menu, X, ShieldCheck } from 'lucide-react';
 import { AuthService } from '../services/authService';
+import { cleanImageUrl } from '../utils/imageUrl';
 import Button from './Button';
 
 const Navbar = () => {
@@ -57,8 +58,8 @@ const Navbar = () => {
             <div className="flex items-center gap-4">
               <Link to="/profile" className="flex items-center gap-2 group">
                 <div className="w-8 h-8 rounded-full border border-blue-500/50 flex items-center justify-center bg-slate-800 group-hover:border-blue-500 transition-colors overflow-hidden">
-                  {user.profileImage ? (
-                    <img src={user.profileImage} alt={user.fullName} className="w-full h-full object-cover" />
+                  {cleanImageUrl(user.profileImage) ? (
+                    <img src={cleanImageUrl(user.profileImage)} alt={user.fullName} className="w-full h-full object-cover" />
                   ) : (
                     <User className="w-4 h-4 text-blue-500" />
                   )}

@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { CustomerService, serviceCategories } from '../../services/customerService';
 import { formatDateDDMMYYYY } from '../../utils/dateFormat';
+import { cleanImageUrl } from '../../utils/imageUrl';
 
 const BookingsAndSaved = () => {
   const { darkMode } = useOutletContext();
@@ -285,9 +286,9 @@ const BookingsAndSaved = () => {
                   {/* Left */}
                   <div className="flex items-center gap-5">
                     <div className="w-14 h-14 rounded-2xl overflow-hidden border border-blue-500/20 bg-slate-800 flex-shrink-0 flex items-center justify-center relative">
-                      {b.providerPhoto ? (
+                      {cleanImageUrl(b.providerPhoto) ? (
                         <img
-                          src={b.providerPhoto}
+                          src={cleanImageUrl(b.providerPhoto)}
                           alt={b.providerName || 'Provider'}
                           className="w-full h-full object-cover"
                           onError={(e) => {
@@ -298,7 +299,7 @@ const BookingsAndSaved = () => {
                         />
                       ) : null}
                       <div
-                        style={{ display: b.providerPhoto ? 'none' : 'flex' }}
+                        style={{ display: cleanImageUrl(b.providerPhoto) ? 'none' : 'flex' }}
                         className="w-full h-full items-center justify-center bg-slate-800 text-slate-400 font-bold text-sm"
                       >
                         <User className="w-6 h-6 text-slate-400" />
@@ -408,8 +409,8 @@ const BookingsAndSaved = () => {
               {/* Profile info */}
               <div className="flex items-center gap-4 pt-2">
                 <div className="w-14 h-14 rounded-2xl overflow-hidden border border-blue-500/20 bg-slate-800 flex-shrink-0 flex items-center justify-center font-bold text-white text-lg">
-                  {p.photo ? (
-                    <img src={p.photo} alt={p.name} className="w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none'; }} />
+                  {cleanImageUrl(p.photo) ? (
+                    <img src={cleanImageUrl(p.photo)} alt={p.name} className="w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none'; }} />
                   ) : (
                     <span>{p.name?.charAt(0) || 'P'}</span>
                   )}

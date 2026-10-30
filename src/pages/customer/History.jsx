@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { CustomerService } from '../../services/customerService';
 import { formatDateDDMMYYYY } from '../../utils/dateFormat';
+import { cleanImageUrl } from '../../utils/imageUrl';
 
 const CustomerHistory = () => {
   const { darkMode } = useOutletContext();
@@ -102,7 +103,7 @@ const CustomerHistory = () => {
             {/* Left */}
             <div className="flex items-center gap-5">
               <div className="w-14 h-14 rounded-2xl overflow-hidden border border-blue-500/20 bg-slate-800 flex-shrink-0">
-                <img src={b.providerPhoto} alt={b.providerName} className="w-full h-full object-cover" />
+                <img src={cleanImageUrl(b.providerPhoto)} alt={b.providerName} className="w-full h-full object-cover" />
               </div>
               <div className="space-y-1">
                 <div className="flex items-center gap-2">

@@ -13,6 +13,7 @@ import { formatWorkingHours } from '../utils/timeFormat.js';
 import { formatDateDDMMYYYY, parseDDMMYYYY, areDatesEqual, getDayOfWeek, getTodayDDMMYYYY } from '../utils/dateFormat.js';
 import { generateServiceBookingId } from '../utils/bookingIdGenerator.js';
 import { registerSSEClient, broadcastNotification } from '../utils/notificationBroadcaster.js';
+import { normalizeImageUrl } from '../utils/imageHandler.js';
 
 const router = express.Router();
 
@@ -132,9 +133,11 @@ router.get('/services-catalog', async (req, res, next) => {
         ? Number((pReviews.reduce((sum, r) => sum + (Number(r.rating) || 0), 0) / reviewsCount).toFixed(1))
         : (p.rating || 5.0);
 
-      const provPhoto = (p.photo && !p.photo.includes('images.unsplash.com/photo-1566492031773-4f4e44671857'))
-        ? p.photo
-        : (p.user?.profileImage || '');
+      const provPhoto = normalizeImageUrl(
+        (p.photo && !p.photo.includes('images.unsplash.com/photo-1566492031773-4f4e44671857'))
+          ? p.photo
+          : (p.user?.profileImage || '')
+      );
 
       return {
         id: s._id,
@@ -145,7 +148,7 @@ router.get('/services-catalog', async (req, res, next) => {
         price: s.price,
         pricingUnit: s.pricingUnit || p.pricingUnit || 'Per Visit',
         duration: s.estimatedDuration || '1 - 2 hours',
-        image: s.image || provPhoto,
+        image: normalizeImageUrl(s.image) || provPhoto,
         rating: avgRating,
         reviewsCount: reviewsCount,
         providerId: p._id,
@@ -274,9 +277,11 @@ router.get('/providers', async (req, res, next) => {
         : 0;
 
       // Authentic registered profile image only; never substitute fake/hardcoded Unsplash stock photos
-      const authenticPhoto = (p.photo && !p.photo.includes('images.unsplash.com/photo-1566492031773-4f4e44671857'))
-        ? p.photo
-        : (p.user?.profileImage || '');
+      const authenticPhoto = normalizeImageUrl(
+        (p.photo && !p.photo.includes('images.unsplash.com/photo-1566492031773-4f4e44671857'))
+          ? p.photo
+          : (p.user?.profileImage || '')
+      );
 
       // Check if provider has specific services registered
       const provServices = allServices.filter(s => s.providerId.toString() === p._id.toString());
@@ -289,7 +294,7 @@ router.get('/providers', async (req, res, next) => {
           unit: s.pricingUnit || p.pricingUnit || 'Per Visit',
           description: s.description,
           duration: s.estimatedDuration,
-          image: s.image || authenticPhoto
+          image: normalizeImageUrl(s.image) || authenticPhoto
         }));
       }
       if (pricing.length === 0) {
@@ -505,9 +510,11 @@ router.get('/top-providers', async (req, res, next) => {
         ? Number((pReviews.reduce((sum, r) => sum + (Number(r.rating) || 0), 0) / reviewsCount).toFixed(1))
         : 0;
 
-      const authenticPhoto = (p.photo && !p.photo.includes('images.unsplash.com/photo-1566492031773-4f4e44671857'))
-        ? p.photo
-        : (p.user?.profileImage || '');
+      const authenticPhoto = normalizeImageUrl(
+        (p.photo && !p.photo.includes('images.unsplash.com/photo-1566492031773-4f4e44671857'))
+          ? p.photo
+          : (p.user?.profileImage || '')
+      );
 
       return {
         id: p._id,
@@ -579,9 +586,11 @@ router.get('/recommendations', async (req, res, next) => {
         ? Number((pReviews.reduce((sum, r) => sum + (Number(r.rating) || 0), 0) / reviewsCount).toFixed(1))
         : 0;
 
-      const authenticPhoto = (p.photo && !p.photo.includes('images.unsplash.com/photo-1566492031773-4f4e44671857'))
-        ? p.photo
-        : (p.user?.profileImage || '');
+      const authenticPhoto = normalizeImageUrl(
+        (p.photo && !p.photo.includes('images.unsplash.com/photo-1566492031773-4f4e44671857'))
+          ? p.photo
+          : (p.user?.profileImage || '')
+      );
 
       const services = await Service.find({ providerId: p._id, isAvailable: true }).lean();
 
@@ -868,7 +877,7 @@ router.post('/estimate', async (req, res, next) => {
         rating: p.rating || 0,
         reviewsCount: p.reviewsCount || 0,
         city: p.city || 'Coimbatore',
-        photo: p.photo || '',
+        photo: normalizeImageUrl(p.photo || ''),
         price: p.pricing && p.pricing.length > 0
           ? `₹${p.pricing[0].price} ${p.pricing[0].unit || 'Per Visit'}`
           : (p.hourlyRate ? `₹${p.hourlyRate} Per Hour` : `₹${p.rate || catDoc.startingPrice} ${p.pricingUnit || catDoc.duration}`)
@@ -1127,11 +1136,11 @@ router.post('/bookings', async (req, res, next) => {
     });
 
     // Resolve registered provider photo from Provider or User
-    let resolvedProviderPhoto = provider?.photo || '';
+    let resolvedProviderPhoto = normalizeImageUrl(provider?.photo || '');
     if (!resolvedProviderPhoto && (providerEmail || provider?._id)) {
       const provUser = await User.findOne({ email: (provider?.email || providerEmail).toLowerCase() });
       if (provUser && provUser.profileImage) {
-        resolvedProviderPhoto = provUser.profileImage;
+        resolvedProviderPhoto = normalizeImageUrl(provUser.profileImage);
       }
     }
 
@@ -1314,18 +1323,18 @@ router.get('/bookings/:email', async (req, res, next) => {
 
     const photoMap = {};
     providers.forEach(p => {
-      if (p.email && p.photo) photoMap[p.email.toLowerCase()] = p.photo;
+      if (p.email && p.photo) photoMap[p.email.toLowerCase()] = normalizeImageUrl(p.photo);
     });
     users.forEach(u => {
       if (u.email && u.profileImage && !photoMap[u.email.toLowerCase()]) {
-        photoMap[u.email.toLowerCase()] = u.profileImage;
+        photoMap[u.email.toLowerCase()] = normalizeImageUrl(u.profileImage);
       }
     });
 
     const formatted = list.map(b => {
       const bObj = b.toObject();
       const provEmail = (b.providerEmail || '').toLowerCase();
-      bObj.providerPhoto = photoMap[provEmail] || b.providerPhoto || '';
+      bObj.providerPhoto = photoMap[provEmail] || normalizeImageUrl(b.providerPhoto || '');
       bObj.date = formatDateDDMMYYYY(b.date) || b.date;
       bObj.address = bObj.customerAddress || bObj.location || bObj.address || 'Address not provided';
       bObj.customerAddress = bObj.address;
@@ -1630,8 +1639,8 @@ router.get('/profile/:email', async (req, res, next) => {
       fullName: user.fullName,
       email: user.email,
       phone: user.phone,
-      photo: customer.photo || user.profileImage || '',
-      profileImage: customer.photo || user.profileImage || '',
+      photo: normalizeImageUrl(customer.photo || user.profileImage || ''),
+      profileImage: normalizeImageUrl(customer.photo || user.profileImage || ''),
       city: customer.city || 'Coimbatore',
       address: customer.address || '',
       state: customer.state || 'Tamil Nadu',

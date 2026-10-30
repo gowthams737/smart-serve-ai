@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { CustomerService } from '../../services/customerService';
 import { AuthService } from '../../services/authService';
+import { cleanImageUrl } from '../../utils/imageUrl';
 import Button from '../../components/Button';
 
 const CustomerProfile = () => {
@@ -424,9 +425,9 @@ const CustomerProfile = () => {
             {/* Avatar with Camera Upload Overlay */}
             <div className="relative inline-block mb-4 pt-2">
               <div className="w-28 h-28 rounded-full border-4 border-blue-500/20 p-1 flex items-center justify-center bg-slate-800 overflow-hidden relative group">
-                {customer.photo ? (
+                {cleanImageUrl(customer.photo) ? (
                   <img
-                    src={customer.photo}
+                    src={cleanImageUrl(customer.photo)}
                     alt={customer.fullName}
                     className="w-full h-full rounded-full object-cover"
                     onError={(e) => {
@@ -438,7 +439,7 @@ const CustomerProfile = () => {
                 ) : null}
                 <div
                   className="cust-profile-fallback w-full h-full rounded-full bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400 font-black text-4xl select-none"
-                  style={{ display: customer.photo ? 'none' : 'flex' }}
+                  style={{ display: cleanImageUrl(customer.photo) ? 'none' : 'flex' }}
                 >
                   {((customer.fullName || '').trim().charAt(0) || 'C').toUpperCase()}
                 </div>

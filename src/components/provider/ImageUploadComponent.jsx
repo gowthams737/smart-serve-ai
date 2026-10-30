@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Upload, Camera, FileCheck, CheckCircle } from 'lucide-react';
+import { cleanImageUrl } from '../../utils/imageUrl';
 
 const ImageUploadComponent = ({
   label,
@@ -103,7 +104,7 @@ const ImageUploadComponent = ({
           <>
             {type === 'image' ? (
               <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 border-green-500">
-                <img src={value} alt="Uploaded" className="w-full h-full object-cover" />
+                <img src={cleanImageUrl(value)} alt="Uploaded" className="w-full h-full object-cover" />
                 <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-200">
                   <Camera className="w-6 h-6 text-white" />
                 </div>

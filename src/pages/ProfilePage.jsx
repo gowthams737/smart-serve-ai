@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { User, Mail, Phone, Edit3, LogOut, Settings, Bell, Shield } from 'lucide-react';
 import { AuthService } from '../services/authService';
+import { cleanImageUrl } from '../utils/imageUrl';
 import Button from '../components/Button';
 
 const ProfilePage = () => {
@@ -28,8 +29,8 @@ const ProfilePage = () => {
             <div className="bg-slate-900/50 backdrop-blur-xl border border-white/10 p-8 rounded-[32px] text-center">
               <div className="relative inline-block mb-6">
                 <div className="w-32 h-32 rounded-full border-4 border-blue-500/20 p-1 flex items-center justify-center bg-slate-800 overflow-hidden">
-                  {user.profileImage ? (
-                    <img src={user.profileImage} alt={user.fullName} className="w-full h-full object-cover rounded-full" />
+                  {cleanImageUrl(user.profileImage) ? (
+                    <img src={cleanImageUrl(user.profileImage)} alt={user.fullName} className="w-full h-full object-cover rounded-full" />
                   ) : (
                     <User className="w-16 h-16 text-blue-500" />
                   )}

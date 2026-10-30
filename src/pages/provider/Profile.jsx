@@ -26,6 +26,7 @@ import Input from '../../components/Input';
 import Button from '../../components/Button';
 import { ProviderService } from '../../services/providerService';
 import { formatWorkingHours } from '../../utils/timeFormat';
+import { cleanImageUrl } from '../../utils/imageUrl';
 
 const ProviderProfile = () => {
   const navigate = useNavigate();
@@ -257,9 +258,9 @@ const ProviderProfile = () => {
         <div className="flex flex-col md:flex-row items-center md:items-end gap-6 text-center md:text-left">
           <div className="relative">
             <div className="w-32 h-32 rounded-full border-4 border-slate-950 overflow-hidden bg-slate-800 p-1 flex items-center justify-center">
-              {provider.profilePhoto || provider.photo ? (
+              {cleanImageUrl(provider.profilePhoto || provider.photo) ? (
                 <img
-                  src={provider.profilePhoto || provider.photo}
+                  src={cleanImageUrl(provider.profilePhoto || provider.photo)}
                   alt={provider.fullName}
                   className="w-full h-full object-cover rounded-full"
                   onError={(e) => {
@@ -271,7 +272,7 @@ const ProviderProfile = () => {
               ) : null}
               <div
                 className="provider-card-fallback w-full h-full items-center justify-center"
-                style={{ display: (provider.profilePhoto || provider.photo) ? 'none' : 'flex' }}
+                style={{ display: cleanImageUrl(provider.profilePhoto || provider.photo) ? 'none' : 'flex' }}
               >
                 <User size={64} className="text-blue-500" />
               </div>

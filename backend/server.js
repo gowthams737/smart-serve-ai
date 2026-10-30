@@ -20,6 +20,7 @@ import customerRoutes from './routes/customerRoutes.js';
 import providerRoutes from './routes/providerRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import aiRoutes from './routes/aiRoutes.js';
+import { normalizeDatabaseImages } from './utils/imageHandler.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -84,8 +85,13 @@ app.use((err, req, res, next) => {
 
 // Database Connection
 mongoose.connect(mongoUri)
-  .then(() => {
+  .then(async () => {
     console.log('Connected to MongoDB database successfully.');
+    try {
+      await normalizeDatabaseImages(mongoose);
+    } catch (e) {
+      console.warn('Initial image normalization skipped:', e.message);
+    }
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
     });

@@ -12,7 +12,7 @@ import { hashPassword, verifyPassword, isSha256, isBcrypt, processPasswordChange
 import { formatWorkingHours } from '../utils/timeFormat.js';
 import { formatDateDDMMYYYY, compareDatesDDMMYYYY, formatRelativeTime } from '../utils/dateFormat.js';
 import { registerSSEClient, broadcastNotification } from '../utils/notificationBroadcaster.js';
-import { saveImageIfBase64 } from '../utils/imageHandler.js';
+import { saveImageIfBase64, normalizeImageUrl } from '../utils/imageHandler.js';
 
 const router = express.Router();
 
@@ -199,7 +199,7 @@ const calculateProviderStats = async (user, provider) => {
 };
 
 const mapProviderProfile = (user, provider, dynamicStats = {}) => {
-  const photo = provider.photo || user?.profileImage || '';
+  const photo = normalizeImageUrl(provider.photo || user?.profileImage || '');
   const name = user?.fullName || provider.name || 'Provider';
   const email = user?.email || provider.email || '';
   const phone = user?.phone || provider.phone || '';
@@ -1016,9 +1016,9 @@ router.post('/services', async (req, res, next) => {
     }
 
     // Automatically reuse the provider's registered profile image
-    const providerPhoto = provider.photo || user?.profileImage || '';
+    const providerPhoto = normalizeImageUrl(provider.photo || user?.profileImage || '');
     const isHardcodedUnsplash = typeof image === 'string' && image.includes('images.unsplash.com/photo-1581578731548-c64695cc6952');
-    const finalImage = (image && !isHardcodedUnsplash) ? image : providerPhoto;
+    const finalImage = (image && !isHardcodedUnsplash) ? normalizeImageUrl(image) : providerPhoto;
 
     const service = await Service.create({
       providerEmail: email.toLowerCase(),
@@ -1085,8 +1085,8 @@ router.put('/services/:id', async (req, res, next) => {
     if (estimatedDuration !== undefined) service.estimatedDuration = estimatedDuration.trim();
     if (image !== undefined) {
       const isHardcodedUnsplash = typeof image === 'string' && image.includes('images.unsplash.com/photo-1581578731548-c64695cc6952');
-      const providerPhoto = provider.photo || user?.profileImage || '';
-      service.image = (image && !isHardcodedUnsplash) ? image : providerPhoto;
+      const providerPhoto = normalizeImageUrl(provider.photo || user?.profileImage || '');
+      service.image = (image && !isHardcodedUnsplash) ? normalizeImageUrl(image) : providerPhoto;
     }
     if (isAvailable !== undefined) service.isAvailable = Boolean(isAvailable);
 

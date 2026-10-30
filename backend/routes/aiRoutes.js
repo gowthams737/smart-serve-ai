@@ -6,6 +6,7 @@ import Booking from '../models/Booking.js';
 import Customer from '../models/Customer.js';
 import ChatConversation from '../models/ChatConversation.js';
 import { parseDocumentAttachment } from '../utils/documentParser.js';
+import { normalizeImageUrl } from '../utils/imageHandler.js';
 
 const router = express.Router();
 
@@ -500,7 +501,7 @@ export async function getLiveKnowledgeContext() {
       workingDays: p.workingDays || ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
       blockedDates: (p.blockedDates || []).map(formatDateDDMMYYYY),
       holidays: (p.holidays || []).map(formatDateDDMMYYYY),
-      photo: p.photo || '',
+      photo: normalizeImageUrl(p.photo || ''),
       experience: p.experience || 1,
       about: p.about || p.bio || 'Verified service professional in Coimbatore.'
     };
@@ -1783,7 +1784,7 @@ export async function generateAIServicePlan({
       name: targetProvider.name,
       rating: targetProvider.rating || 0,
       reviewsCount: targetProvider.reviewsCount || 0,
-      photo: targetProvider.photo || '',
+      photo: normalizeImageUrl(targetProvider.photo || ''),
       phone: targetProvider.phone || '',
       city: targetProvider.city || 'Coimbatore',
       category: targetProvider.category,
@@ -1829,7 +1830,7 @@ export async function generateAIServicePlan({
         name: prov.name,
         rating: prov.rating || 0,
         reviewsCount: prov.reviewsCount || 0,
-        photo: prov.photo || '',
+        photo: normalizeImageUrl(prov.photo || ''),
         city: prov.city || 'Coimbatore',
         category: prov.category,
         rate: prov.hourlyRate || prov.rate || unitRate,

@@ -1,3 +1,5 @@
+import { cleanImageUrl } from '../utils/imageUrl';
+
 const CUSTOMER_KEY = 'smartserve_customer';
 const CUSTOMER_BOOKINGS_KEY = 'smartserve_customer_bookings';
 const CUSTOMER_SAVED_KEY = 'smartserve_customer_saved';
@@ -187,7 +189,7 @@ export const CustomerService = {
       fullName: user.fullName || user.name || (user.email ? user.email.split('@')[0] : 'Customer'),
       email: user.email,
       phone: user.phone || '',
-      photo: user.profileImage || user.photo || '',
+      photo: cleanImageUrl(user.profileImage || user.photo || ''),
       address: user.address || '',
       city: user.city || 'Coimbatore',
       state: user.state || 'Tamil Nadu',
@@ -218,6 +220,8 @@ export const CustomerService = {
         return null;
       }
       if (data.success && data.profile) {
+        if (data.profile.photo) data.profile.photo = cleanImageUrl(data.profile.photo);
+        if (data.profile.profileImage) data.profile.profileImage = cleanImageUrl(data.profile.profileImage);
         const merged = { ...user, ...data.profile };
         localStorage.setItem('smartserve_user', JSON.stringify(merged));
         window.dispatchEvent(new Event('profile-updated'));
@@ -265,7 +269,7 @@ export const CustomerService = {
     try {
       const res = await fetch(`/api/customer/bookings/${encodeURIComponent(email)}`);
       const data = await res.json();
-      return data.success ? data.bookings.map(b => ({ ...b, id: b.bookingId || b._id })) : [];
+      return data.success ? data.bookings.map(b => ({ ...b, id: b.bookingId || b._id, providerPhoto: cleanImageUrl(b.providerPhoto) })) : [];
     } catch (e) {
       console.error(e);
       return [];
@@ -457,6 +461,12 @@ export const CustomerService = {
       const seenProviderIds = new Set();
       const uniqueProviders = [];
       for (const p of rawProviders) {
+        if (p.photo) p.photo = cleanImageUrl(p.photo);
+        if (Array.isArray(p.pricing)) {
+          p.pricing.forEach(pr => {
+            if (pr.image) pr.image = cleanImageUrl(pr.image);
+          });
+        }
         const idStr = String(p.id || p._id);
         if (!seenProviderIds.has(idStr)) {
           seenProviderIds.add(idStr);

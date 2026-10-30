@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 import { CustomerService, serviceCategories } from '../../services/customerService';
 import { formatWorkingHours } from '../../utils/timeFormat';
+import { cleanImageUrl } from '../../utils/imageUrl';
 import DateInput from '../../components/DateInput';
 import {
   formatDateDDMMYYYY,
@@ -694,8 +695,8 @@ const CustomerProviders = () => {
                     <div className="flex justify-between items-start gap-4">
                       <div className="flex items-center gap-4">
                         <div className="w-16 h-16 rounded-2xl overflow-hidden border border-blue-500/20 bg-slate-800 flex-shrink-0 flex items-center justify-center font-bold text-white text-xl">
-                          {p.photo ? (
-                            <img src={p.photo} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onError={(e) => { e.target.style.display = 'none'; }} />
+                          {cleanImageUrl(p.photo) ? (
+                            <img src={cleanImageUrl(p.photo)} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onError={(e) => { e.target.style.display = 'none'; }} />
                           ) : (
                             <span>{p.name?.charAt(0) || 'P'}</span>
                           )}
@@ -930,8 +931,8 @@ const CustomerProviders = () => {
                 </button>
                 <div className="absolute bottom-4 left-6 flex items-end gap-4">
                   <div className="w-20 h-20 rounded-2xl overflow-hidden border-4 border-slate-900 bg-slate-800 flex items-center justify-center font-bold text-white text-2xl flex-shrink-0">
-                    {selectedProvider.photo ? (
-                      <img src={selectedProvider.photo} alt={selectedProvider.name} className="w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none'; }} />
+                    {cleanImageUrl(selectedProvider.photo) ? (
+                      <img src={cleanImageUrl(selectedProvider.photo)} alt={selectedProvider.name} className="w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none'; }} />
                     ) : (
                       <span>{selectedProvider.name?.charAt(0) || 'P'}</span>
                     )}

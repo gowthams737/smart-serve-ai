@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { ShieldCheck, Award, MapPin, Clock, User, IndianRupee, ArrowRight } from 'lucide-react';
 import RatingStars from './RatingStars';
 import { formatWorkingHours } from '../../utils/timeFormat';
+import { cleanImageUrl } from '../../utils/imageUrl';
 
 const ProfileCard = ({ provider }) => {
   return (
@@ -17,8 +18,8 @@ const ProfileCard = ({ provider }) => {
         <div className="flex flex-col items-center text-center space-y-3">
           <div className="relative">
             <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-blue-500/20 p-1 bg-slate-800 flex items-center justify-center">
-              {provider.profilePhoto || provider.photo ? (
-                <img src={provider.profilePhoto || provider.photo} alt={provider.fullName} className="w-full h-full object-cover rounded-full" />
+              {cleanImageUrl(provider.profilePhoto || provider.photo) ? (
+                <img src={cleanImageUrl(provider.profilePhoto || provider.photo)} alt={provider.fullName} className="w-full h-full object-cover rounded-full" />
               ) : (
                 <span className="text-3xl font-extrabold text-blue-500">
                   {provider.fullName?.charAt(0)}

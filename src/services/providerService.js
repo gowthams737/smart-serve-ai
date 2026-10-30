@@ -1,3 +1,5 @@
+import { cleanImageUrl } from '../utils/imageUrl';
+
 const PROVIDER_KEY = 'smartserve_provider';
 const SERVICES_KEY = 'smartserve_provider_services';
 const BOOKINGS_KEY = 'smartserve_provider_bookings';
@@ -37,8 +39,8 @@ export const ProviderService = {
       pincode: user.pincode || '641002',
       address: user.address || '',
       isOnline: user.isOnline !== undefined ? user.isOnline : true,
-      photo: user.profileImage || '',
-      profilePhoto: user.profileImage || '',
+      photo: cleanImageUrl(user.profileImage || ''),
+      profilePhoto: cleanImageUrl(user.profileImage || ''),
       pricingUnit: user.pricingUnit || 'Per Visit',
       rate: user.rate || 0,
       workingHours: user.workingHours || { start: '09:00', end: '18:00' },
@@ -61,6 +63,8 @@ export const ProviderService = {
       }
       const data = await res.json();
       if (data.success && data.profile) {
+        if (data.profile.photo) data.profile.photo = cleanImageUrl(data.profile.photo);
+        if (data.profile.profilePhoto) data.profile.profilePhoto = cleanImageUrl(data.profile.profilePhoto);
         return data.profile;
       }
       if (data && data.success === false && data.message?.includes('not found')) {
@@ -111,12 +115,14 @@ export const ProviderService = {
       }
       const updatedProfile = data.profile || data.provider;
       if (updatedProfile) {
+        if (updatedProfile.photo) updatedProfile.photo = cleanImageUrl(updatedProfile.photo);
+        if (updatedProfile.profilePhoto) updatedProfile.profilePhoto = cleanImageUrl(updatedProfile.profilePhoto);
         // Also sync local storage user info
         const updatedUser = {
           ...user,
           fullName: updatedProfile.fullName || updatedProfile.name || user.fullName,
           phone: updatedProfile.phone || user.phone,
-          profileImage: updatedProfile.profilePhoto || updatedProfile.photo || user.profileImage,
+          profileImage: cleanImageUrl(updatedProfile.profilePhoto || updatedProfile.photo || user.profileImage),
           rate: updatedProfile.rate,
           pricingUnit: updatedProfile.pricingUnit,
           workingHours: updatedProfile.workingHours,

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useOutletContext, Link } from 'react-router-dom';
 import { Heart, Star, MapPin, Search } from 'lucide-react';
 import { CustomerService, serviceCategories } from '../../services/customerService';
+import { cleanImageUrl } from '../../utils/imageUrl';
 
 const CustomerSaved = () => {
   const { darkMode } = useOutletContext();
@@ -57,8 +58,8 @@ const CustomerSaved = () => {
             {/* Profile info */}
             <div className="flex items-center gap-4 pt-2">
               <div className="w-14 h-14 rounded-2xl overflow-hidden border border-blue-500/20 bg-slate-800 flex-shrink-0 flex items-center justify-center font-bold text-white text-lg">
-                {p.photo ? (
-                  <img src={p.photo} alt={p.name} className="w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none'; }} />
+                {cleanImageUrl(p.photo) ? (
+                  <img src={cleanImageUrl(p.photo)} alt={p.name} className="w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none'; }} />
                 ) : (
                   <span>{p.name?.charAt(0) || 'P'}</span>
                 )}

@@ -23,9 +23,39 @@ export const uploadedFileExists = (imageUrl) => {
 };
 
 /**
+ * Normalizes any image URL (e.g. http://localhost:5000/uploads/xyz.png,
+ * http://127.0.0.1:5000/uploads/xyz.png, or /uploads/xyz.png)
+ * into a clean relative /uploads/xyz.png path so images always load from the active host origin.
+ */
+export const normalizeImageUrl = (imageUrl) => {
+  if (!imageUrl || typeof imageUrl !== 'string') return '';
+  const trimmed = imageUrl.trim();
+  if (!trimmed) return '';
+
+  // Reject transient blob: URLs
+  if (trimmed.startsWith('blob:')) return '';
+
+  // Reject hardcoded sample Unsplash placeholders
+  if (trimmed.includes('images.unsplash.com/photo-1566492031773-4f4e44671857')) {
+    return '';
+  }
+
+  // If it's a local /uploads/ URL, extract filename and return clean relative path
+  if (trimmed.includes('/uploads/')) {
+    const parts = trimmed.split('/uploads/');
+    const fileName = parts[parts.length - 1].split('?')[0];
+    if (!fileName) return '';
+    return `/uploads/${fileName}`;
+  }
+
+  return trimmed;
+};
+
+/**
  * Validates and sanitizes an image URL.
  * If the image points to a local /uploads/ URL that is missing from disk,
  * returns an empty string '' (never a random placeholder or broken URL).
+ * If valid, returns the clean normalized relative URL.
  */
 export const sanitizeImageUrl = (imageUrl) => {
   if (!imageUrl || typeof imageUrl !== 'string') return '';
@@ -46,6 +76,7 @@ export const sanitizeImageUrl = (imageUrl) => {
       console.warn(`Local upload file missing on disk for: ${trimmed}`);
       return '';
     }
+    return normalizeImageUrl(trimmed);
   }
 
   return trimmed;
@@ -121,5 +152,52 @@ export const saveImageIfBase64 = (imageString) => {
   } catch (err) {
     console.error('Error saving base64 image to disk:', err);
     return '';
+  }
+};
+
+/**
+ * One-time non-destructive startup helper that migrates any legacy 'http://localhost:5000/uploads/'
+ * or localhost URLs in MongoDB (providers, users, customers, services) to clean relative '/uploads/' paths.
+ */
+export const normalizeDatabaseImages = async (mongooseInstance) => {
+  try {
+    const db = mongooseInstance?.connection?.db;
+    if (!db) return;
+
+    const localhostRegex = /http:\/\/localhost:\d+\/uploads\//;
+
+    // 1. Providers
+    const providersWithLocalhost = await db.collection('providers').find({ photo: { $regex: localhostRegex } }).toArray();
+    for (const p of providersWithLocalhost) {
+      const cleanPhoto = normalizeImageUrl(p.photo);
+      await db.collection('providers').updateOne({ _id: p._id }, { $set: { photo: cleanPhoto } });
+    }
+
+    // 2. Users
+    const usersWithLocalhost = await db.collection('users').find({ profileImage: { $regex: localhostRegex } }).toArray();
+    for (const u of usersWithLocalhost) {
+      const cleanImg = normalizeImageUrl(u.profileImage);
+      await db.collection('users').updateOne({ _id: u._id }, { $set: { profileImage: cleanImg } });
+    }
+
+    // 3. Customers
+    const customersWithLocalhost = await db.collection('customers').find({ photo: { $regex: localhostRegex } }).toArray();
+    for (const c of customersWithLocalhost) {
+      const cleanPhoto = normalizeImageUrl(c.photo);
+      await db.collection('customers').updateOne({ _id: c._id }, { $set: { photo: cleanPhoto } });
+    }
+
+    // 4. Services
+    const servicesWithLocalhost = await db.collection('services').find({ image: { $regex: localhostRegex } }).toArray();
+    for (const s of servicesWithLocalhost) {
+      const cleanImage = normalizeImageUrl(s.image);
+      await db.collection('services').updateOne({ _id: s._id }, { $set: { image: cleanImage } });
+    }
+
+    if (providersWithLocalhost.length > 0 || usersWithLocalhost.length > 0) {
+      console.log(`✓ Normalized legacy localhost image URLs in database (${providersWithLocalhost.length} providers, ${usersWithLocalhost.length} users updated).`);
+    }
+  } catch (err) {
+    console.warn('normalizeDatabaseImages warning:', err.message);
   }
 };

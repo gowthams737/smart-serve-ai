@@ -19,6 +19,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { CustomerService } from '../../services/customerService';
+import { cleanImageUrl } from '../../utils/imageUrl';
 
 function formatBytes(bytes) {
   if (!bytes || bytes === 0) return '0 B';
@@ -464,9 +465,9 @@ const AIAssistant = () => {
                           darkMode ? 'bg-slate-950/60 border-white/10' : 'bg-white border-slate-200 shadow-md'
                         }`}>
                           <div className="flex items-center gap-3">
-                            {m.card.photo ? (
+                            {cleanImageUrl(m.card.photo) ? (
                               <img
-                                src={m.card.photo}
+                                src={cleanImageUrl(m.card.photo)}
                                 alt={m.card.title}
                                 className="w-12 h-12 rounded-xl object-cover"
                                 onError={(e) => { e.currentTarget.style.display = 'none'; }}
